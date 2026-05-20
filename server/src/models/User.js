@@ -29,9 +29,16 @@ const userSchema = new mongoose.Schema({
         enum: ['car', 'motorcycle', 'truck'],
         default: 'car',
     },
-    refreshToken:{
-        type: String,
-        default: null,
+    // refreshToken:{
+    //     type: String,
+    //     default: null,
+    // },
+    refreshToken: {
+        token: {type: String, default: null},
+        createdAt: {type: Date, default: null},
+        expiresAt: {type: Date, default: null},
+        deviceFingerprint: {type: String, default: null},
+        lastIP: {type: String, default: null},
     },
 }, {timestamps: true});
 
