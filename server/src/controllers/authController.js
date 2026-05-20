@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
+const UAParser = require('ua-parser-js');
 
 //generate AccessToken
 const generateAccessToken = (userId)=>{ 
@@ -32,12 +32,21 @@ const setTokenCookies = (res, accessToken, refreshToken) => {
 
 };
 
-// dry function
+// dry function for gitting device and ip data
 const getSecurityData= (req) => {
-    return {
-        userAgent: req.headers['user-agent'] || 'unknown',
-        ip: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1'
-    };
+    const parser = new UAParser(req.headers['user-agent']);
+    const browserName = parser.getBrowser().name || 'unknown';
+    const osName = parser.getOS().name || 'unknown';
+    //dynamic identfires 
+    const cleanFingerprint = `${osName}-${browserName}`;
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+
+    return {cleanFingerprint, ip};
+
+    // return {
+    //     userAgent: req.headers['user-agent'] || 'unknown',
+    //     ip: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1'
+    // };
 };
 
 //endpoints controllers
@@ -60,13 +69,15 @@ const register = async (req, res)=>{
         //save refreshtoken in the db so we can checked it out any time we want
         // user.refreshToken = refreshToken;
         //more security date save
-        const {userAgent, ip} = getSecurityData(req);
+        // const {userAgent, ip} = getSecurityData(req);
+        const {cleanFingerprint, ip} = getSecurityData(req);
 
         user.refreshToken = {
             token: refreshToken,
             createdAt: new Date(),
             expiresAt: new Date(Date.now() + 7*24*60*60*1000),
-            deviceFingerprint: userAgent,
+            // deviceFingerprint: userAgent,
+            deviceFingerprint: cleanFingerprint,
             lastIP: ip,
         }
 
@@ -105,13 +116,13 @@ const login = async (req, res)=>{
 
         //save refreshtoken in the db so we can checked it out any time we want
         // user.refreshToken = refreshToken;
-        const {userAgent, ip} = getSecurityData(req);
+        const {cleanFingerprint, ip} = getSecurityData(req);
 
         user.refreshToken = {
             token: refreshToken,
             createdAt: new Date(),
             expiresAt: new Date(Date.now() + 7*24*60*60*1000),
-            deviceFingerprint: userAgent,
+            deviceFingerprint: cleanFingerprint,
             lastIP: ip,
         }
         await user.save();
@@ -147,6 +158,7 @@ const refresh = async (req, res)=> {
             // if (!user || user.refreshToken !== token) return res.status(401).json({msg: "invalid refresh token"});
             if(!user) return res.status(401).json({msg: "user not found"});
             // if old token try to register get all out 
+
             if (user.refreshToken && user.refreshToken.token !== token) {
                 user.refreshToken = {token: null, createdAt: null, expiresAt: null, deviceFingerprint: null, lastIP: null};
                 await user.save();
@@ -156,11 +168,11 @@ const refresh = async (req, res)=> {
 
             }
 
-            const {userAgent, ip} = getSecurityData(req);
+            const {cleanFingerprint, ip} = getSecurityData(req);
             const now = new Date();
 
             // device fingerprint 
-            if(user.refreshToken.deviceFingerprint !== userAgent){
+            if(user.refreshToken.deviceFingerprint !== cleanFingerprint){
                 return res.status(401).json({msg: "security violation: device mismatch"});
             }
 
@@ -184,7 +196,7 @@ const refresh = async (req, res)=> {
                 token: newRefreshToken,
                 createdAt: now,
                 expiresAt: user.refreshToken.expiresAt,
-                deviceFingerprint: userAgent,
+                deviceFingerprint: cleanFingerprint,
                 lastIP: ip,
             }
             await user.save();
