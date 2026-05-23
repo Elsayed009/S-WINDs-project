@@ -184,7 +184,7 @@ const refresh = async (req, res)=> {
             // lifetime token ended
             if(now>user.refreshToken.expiresAt) return res.status(401).json({msg: "long session date expired (lifetime), please login again"})
 
-            if (user.refreshToken.lastIp !== ip) return res.status(401).json({msg: "suspicious location/ network changed sedenly"});
+            if (user.refreshToken.lastIP !== ip) return res.status(401).json({msg: "suspicious location/ network changed sedenly"});
             //end of security traps 
 
             // new refresh token for the access token //  hard to be hacked
@@ -221,7 +221,7 @@ const logout = async (req, res) => {
             createdAt: null,
             expiresAt: null,
             deviceFingerprint: null,
-            lastIp: null }}
+            lastIP: null }}
       );
     }
     res.clearCookie('accessToken');
