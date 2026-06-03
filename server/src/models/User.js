@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'email is required'],
-        uinque: true,
+        unique: true,
         lowercase: true,
         trim: true,
     },
@@ -39,14 +39,20 @@ const userSchema = new mongoose.Schema({
         expiresAt: {type: Date, default: null},
         deviceFingerprint: {type: String, default: null},
         lastIP: {type: String, default: null},
+        countryCode: {type: String, default: null},
     },
 }, {timestamps: true});
 
 //save hashed password
-userSchema.pre('save',async function(next){
-    if (!this.isModified('password')) return next();
+// userSchema.pre('save',async function(next){
+//     if (!this.isModified('password')) return next();
+//     this.password = await bcrypt.hash(this.password, 12);
+//     next();
+// });
+
+userSchema.pre('save', async function() {
+    if (!this.isModified('password')) return; 
     this.password = await bcrypt.hash(this.password, 12);
-    next();
 });
 
 // compaire method

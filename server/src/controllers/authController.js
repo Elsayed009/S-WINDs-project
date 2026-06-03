@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const UAParser = require('ua-parser-js');
-
+const geoIp = require('geoip-lite'); // getting regin
 //generate AccessToken
 const generateAccessToken = (userId)=>{ 
     return jwt.sign({id: userId}, 
@@ -46,7 +46,10 @@ const getSecurityData= (req) => {
      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
       '127.0.0.1'; // get ip locations from proxy or load balancer like aws locations
 
-    return {cleanFingerprint, ip};
+      //get countrycode
+      const geo = geoIp.lookup(ip);
+      const countryCode = geo ? geo.country: 'unknown'; // eg, usa, us, etc.
+    return {cleanFingerprint, ip, countryCode};
 
     // return {
     //     userAgent: req.headers['user-agent'] || 'unknown',
@@ -166,6 +169,7 @@ const refresh = async (req, res)=> {
             if(!user) return res.status(401).json({msg: "user not found"});
             // if old token try to register get all out 
 
+            //token reuse
             if (user.refreshToken && user.refreshToken.token !== token) {
                 user.refreshToken = {token: null, createdAt: null, expiresAt: null, deviceFingerprint: null, lastIP: null};
                 await user.save();
@@ -175,30 +179,34 @@ const refresh = async (req, res)=> {
 
             }
 
-            const {cleanFingerprint, ip} = getSecurityData(req);
+            const {countryCode,cleanFingerprint, ip} = getSecurityData(req);
             const now = new Date();
 
             // device fingerprint 
             if(user.refreshToken.deviceFingerprint !== cleanFingerprint){
                 return res.status(401).json({msg: "security violation: device mismatch"});
             }
+            
+            
+            // conuntry cheker
+            // if (user.refreshToken.lastIP !== ip) return res.status(401).json({msg: "suspicious location/ network changed sedenly"});
+            if (user.refreshToken.countryCode && user.refreshToken.countryCode!== countryCode) return res.status(401).json({msg: "suspicious location/ country network changed sedenly"});
 
-            //24 lifetime no move token ended
-            const inactivePeriod = 24*60*60*1000;
+            //72 lifetime no activemove token ended
+            const inactivePeriod = 72*60*60*1000;
             if (now - user.refreshToken.createdAt> inactivePeriod) {
                 return res.status(401).json({msg: "session expired due to inactivity"});
             }
-            // lifetime token ended
+            // 7d lifetime token ended
             if(now>user.refreshToken.expiresAt) return res.status(401).json({msg: "long session date expired (lifetime), please login again"})
 
-            if (user.refreshToken.lastIP !== ip) return res.status(401).json({msg: "suspicious location/ network changed sedenly"});
             //end of security traps 
 
+            // refresh token Rotation
             // new refresh token for the access token //  hard to be hacked
             const newAccessToken = generateAccessToken(user._id);
             const newRefreshToken = generateRefreshToken(user._id);
 
-            // refresh token Rotation
             // reassign the old refresh token with the newRefresh token
             // user.refreshToken = newRefreshToken;
             user.refreshToken = {
@@ -207,6 +215,7 @@ const refresh = async (req, res)=> {
                 expiresAt: user.refreshToken.expiresAt,
                 deviceFingerprint: cleanFingerprint,
                 lastIP: ip,
+                countryCode: countryCode
             }
             await user.save();
             setTokenCookies(res, newAccessToken, newRefreshToken)

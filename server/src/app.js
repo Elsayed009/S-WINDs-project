@@ -17,7 +17,6 @@ app.use(cors({
 }));
 
 //endpoints routes here:
-
 app.use('/api/auth', authRouters);
 
 
