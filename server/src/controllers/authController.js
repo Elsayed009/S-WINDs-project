@@ -19,27 +19,32 @@ const setTokenCookies = (res, accessToken, refreshToken) => {
     res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'strict', //better to be lax
         maxAge: 15 * 60 *1000 // 15 minutes
     });
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'strict', //better to be lax
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
 
     });
 
 };
 
+//adding security lair to protect the refreash token if h4ck3r access from another device
 // dry function for gitting device and ip data
 const getSecurityData= (req) => {
     const parser = new UAParser(req.headers['user-agent']);
-    const browserName = parser.getBrowser().name || 'unknown';
+    const browserName = parser.getBrowser().name || 'unknown'; // version will rest every update
     const osName = parser.getOS().name || 'unknown';
+    const deviceType = parser.getDevice().type || 'desktop';
     //dynamic identfires 
-    const cleanFingerprint = `${osName}-${browserName}`;
-    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const cleanFingerprint = `${osName}-${deviceType}-${browserName}`.toLowerCase();
+
+    const ip = req.ip ||
+     req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      '127.0.0.1'; // get ip locations from proxy or load balancer like aws locations
 
     return {cleanFingerprint, ip};
 
@@ -64,14 +69,13 @@ const register = async (req, res)=>{
         const accessToken = generateAccessToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
 
-
-        
         //save refreshtoken in the db so we can checked it out any time we want
         // user.refreshToken = refreshToken;
         //more security date save
         // const {userAgent, ip} = getSecurityData(req);
         const {cleanFingerprint, ip} = getSecurityData(req);
 
+        //create the refreshtoken for the regisered user
         user.refreshToken = {
             token: refreshToken,
             createdAt: new Date(),
@@ -82,9 +86,10 @@ const register = async (req, res)=>{
         }
 
         await user.save();
-        
+        // set time and credentails for each token
         setTokenCookies(res, accessToken, refreshToken);
 
+        //res data
         res.status(201).json({
             msg: "user registered successfully",
             user: {
@@ -145,12 +150,14 @@ const login = async (req, res)=>{
   }
 }
 
-// refresh
+
+// recreate the accesstoken by the refreshtoken 
+//and security traps 
 const refresh = async (req, res)=> {
     try{
         const token = req.cookies.refreshToken;
         if (!token) return res.status(401).json({msg: "no refresh token"})
-
+            //deocd the refreshtoken
             const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 
             //security traps and checkers
@@ -190,6 +197,8 @@ const refresh = async (req, res)=> {
             // new refresh token for the access token //  hard to be hacked
             const newAccessToken = generateAccessToken(user._id);
             const newRefreshToken = generateRefreshToken(user._id);
+
+            // refresh token Rotation
             // reassign the old refresh token with the newRefresh token
             // user.refreshToken = newRefreshToken;
             user.refreshToken = {
