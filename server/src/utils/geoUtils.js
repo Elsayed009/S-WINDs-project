@@ -2,7 +2,7 @@
 
 const ngeohash = require('ngeohash');
 
-const encodeGeohash = (lat, lng, precision = 5) => {
+const encodeGeohash = (lat, lng, precision = 5) => { //best precision for is is = 9, cause it = 5meter in ground
     return ngeohash.encode(lat, lng, precision);
 };
 

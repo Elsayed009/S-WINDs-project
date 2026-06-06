@@ -239,7 +239,8 @@ const logout = async (req, res) => {
             createdAt: null,
             expiresAt: null,
             deviceFingerprint: null,
-            lastIP: null }}
+            lastIP: null,
+            countryCode: null }}
       );
     }
     res.clearCookie('accessToken');
