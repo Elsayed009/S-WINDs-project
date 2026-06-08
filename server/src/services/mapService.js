@@ -1,13 +1,13 @@
 const axios = require('axios');
 
 const getRoute = async (originLat, originLng, destLat, destLng) => {
-    const url = `http://router.project-osrm.org/route/v1/driving/${originLng},${originLat},${destLng},${destLat}`;
+    const url = `http://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}`; // osrm server
 
     const response = await axios.get(url, {
         params: {
-            overview: 'full',
-            geometries: 'geojson',
-            steps: false,
+            overview: 'full', // full road details
+            geometries: 'geojson', // res in json
+            steps: false, // diraction commands
         },
     });
 
@@ -23,7 +23,7 @@ const getRoute = async (originLat, originLng, destLat, destLng) => {
 
 const sampleWaypoints = (coordinates, totalDurationMin, departureTime) => {
     const waypoints = [];
-    const totalPoints = coordinates.lenght;
+    const totalPoints = coordinates.length;
     const numWaypoints = Math.ceil(totalDurationMin /30);
 
     for (let i = 0; i<= numWaypoints; i++) {

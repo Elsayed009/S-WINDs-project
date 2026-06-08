@@ -3,7 +3,8 @@ const weatherCache = require('../models/WeatherCache');
 const { encodeGeohash, roundToNearest30Min } = require('../utils/geoUtils');
 
 const fetchWeatherFromAPI = async (lat, lng, targetTime) => {
-    const response = await axios.get('https://api.tomorrow.io/v4/weather/forecast',{
+    // const response = await axios.get('https://api.tomorrow.io/v4/weather/forecast',{
+    const response = await axios.get('https://api.tomorrow.io/v4/timelines',{
      params: {
         location: `${lat},${lng}`, // how tomorrow.io see the location data
         apikey: process.env.TOMORROW_API_KEY,
@@ -22,7 +23,8 @@ const fetchWeatherFromAPI = async (lat, lng, targetTime) => {
      },
     });
 
-    const interval = response.data?.timelines?.hourly?.[0]?.values;
+    // const interval = response.data?.timelines?.hourly?.[0]?.values;
+    const interval = response.data?.data?.timelines?.[0]?.intervals?.[0]?.values;
     if(!interval)throw new Error('no weather data returned from API');
 
     

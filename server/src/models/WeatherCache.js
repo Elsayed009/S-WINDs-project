@@ -5,7 +5,7 @@ const weatherCacheSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    forcastTime: {
+    forecastTime: {
         type: Date,
         required: true,
     },

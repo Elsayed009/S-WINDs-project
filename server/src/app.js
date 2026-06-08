@@ -4,7 +4,11 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const authRouters = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes');
+const routeRoutes = require('./routes/routeRoutes');
+const errorHandler = require('./middlewares/errorMiddleware');
+
+
 
 const app = express();
 
@@ -13,11 +17,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
     origin : 'http://localhost:5173',
-    credentials: true
+    credentials: true,
 }));
 
 //endpoints routes here:
-app.use('/api/auth', authRouters);
+app.use('/api/auth', authRoutes);
+app.use('/api/routes', routeRoutes);
 
 
 
@@ -27,6 +32,8 @@ app.get('/', (req, res)=>{
     res.status(200).json({msg: "wind api is ruunnig"});
 
 });
+
+app.use(errorHandler);
 
 module.exports = app;
 
