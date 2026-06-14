@@ -108,3 +108,23 @@ S-WINDS/
     │   └── main.jsx      # React runtime entry point & Redux state context provider 
     ├── .env              # Frontend client environment declarations 
     └── .gitignore
+
+
+API Endpoints Reference
+ Authentication (/api/auth)
+      POST /api/auth/register - Registers a new user account (Driver or Fleet Manager).
+      POST /api/auth/login - Authenticates credentials; returns an encrypted Access Token & deposits a long-lived Refresh Token into secure HttpOnly cookies.
+      POST /api/auth/refresh - Evaluates valid refresh tokens to emit renewed Access Token cookies.
+      POST /api/auth/logout - Clears operational auth tracking cookies.
+   Navigation & Weather (/api/routes)
+      POST /api/routes/plan (Protected) - Accepts spatial endpoints and returns a complete chronological waypoint matrix packed with individual weather metadata, safety scores, and speed configurations.
+      POST /api/routes/smart-departure (Protected) - Analyzes safety matrices across upcoming departure times to rank alternative start times.  
+      POST /api/routes/history (Protected) - Retrieves chronological logs of past journey profiles.
+   Advertisements & Commercial Hooks (/api/ads)
+      GET /api/ads/recommendations (Protected) - Provides geofenced roadside service listings customized dynamically to situational fatigue scores or active weather anomalies.
+   Fleet Operations (/api/fleet)
+      GET /api/fleet/status (Fleet Manager Only) - Fetches current telematics details, tracking arrays, and surrounding weather conditions for all vehicles.
+       /api/fleet/alert (Fleet Manager Only) - Dispatches immediate warning flags directly to chosen vehicle configurations via active Socket.io listeners
+
+       
+   Developed as a Final Graduation Project Template by Elsayed Elkhozamy - all rights reserved
