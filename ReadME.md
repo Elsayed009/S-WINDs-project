@@ -1,5 +1,5 @@
 
-# $\color{#9b5de5}{\text{S}}\text{-}\color{#00bbf9}{\text{W}}\color{#00a896}{\text{I}}\color{#f39c12}{\text{N}}\color{#f39c12}{\text{D}}\color{#f39c12}{\text{s}}\ \text{--}\ \color{#9b5de5}{\text{Smart}}\ \color{#00bbf9}{\text{Weather}}\text{-}\color{#00a896}{\text{Integrated}}\ \color{#f39c12}{\text{Navigation\ \&\ Driving\ System}}$ **MERN Stack | Progressive Web App (PWA) | Real-Time (Socket.io) | B2C & B2B Solutions** ![MERN Stack](https://img.shields.io/badge/Stack-MERN-blue.svg)
+
 
 # S-WINDS 
 ### Smart Weather-Integrated Navigation & Driving System
