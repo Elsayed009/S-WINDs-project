@@ -11,10 +11,11 @@ const getRoute = async (originLat, originLng, destLat, destLng) => {
         },
     });
 
-    const route = response.data?.routes?.[0];
+    const route = response.data?.routes?.[0]; // get the first route cause the trip could have many rout to get to
     if(!route) throw new Error('no route found');
 
     return {
+        // return the data from the osrm 
         distanceKm: route.distance /1000,
         durationMin: route.duration /60,
         coordinates: route.geometry.coordinates,

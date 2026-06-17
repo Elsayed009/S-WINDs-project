@@ -6,21 +6,22 @@ const encodeGeohash = (lat, lng, precision = 5) => { //best precision for is is 
     return ngeohash.encode(lat, lng, precision);
 };
 
-const roundToNearest30Min = (date)=> {
+const roundToNearest30Min = (date)=> {  //every 30 min 
     const ms = 30 * 60 *1000;
-    return new Date(Math.round(date.getTime()/ms)*ms);
+    return new Date(Math.round(date.getTime()/ms)*ms); // check for its 30 or not by mathing
 };
 
 const calculateSafeSpeed = (weatherData, vehicleType) => {
-    const {condition, windSpeed, visibility, precipitation} = weatherData;
+    const {condition, windSpeed, visibility, precipitation} = weatherData; // get data condition from the wetherData by the destrctuer way of obj
 
     const baseSpeed = { car:120, motorcycle: 100, truck: 90} [vehicleType] || 120;
     let speedLimit = baseSpeed;
 
-    if (condition === 'fog' || visibility < 200) speedLimit = Math.min(speedLimit, 40);
-    else if (visibility< 500) speedLimit = Math.min(speedLimit, 60);
+    if (condition === 'fog' || visibility < 0.2) speedLimit = Math.min(speedLimit, 40);
+    else if (visibility< 0.5) speedLimit = Math.min(speedLimit, 60);
 
     if (condition === 'sandstorm') speedLimit = Math.min(speedLimit, 30);
+
     if (precipitation>10) speedLimit = Math.min(speedLimit, 60);
     else if (precipitation >2) speedLimit = Math.min(speedLimit, 80);
 
@@ -29,10 +30,10 @@ const calculateSafeSpeed = (weatherData, vehicleType) => {
 return speedLimit;
 };
 
-const calculateRiskLevel = (weatherData, vehicleType) => {
+const calculateRiskLevel = (weatherData, vehicleType) => { // clac the safe speed and the risk level by the weather data and the vehicle type
     const safeSpeed = calculateSafeSpeed(weatherData, vehicleType);
     const {condition} = weatherData;
-
+        // risk levels
         if (condition === 'sandstorm' || safeSpeed <= 40) return 'high';
         if (condition === 'fog' || safeSpeed <= 70) return 'medium';
         return 'low';
