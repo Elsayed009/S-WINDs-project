@@ -18,6 +18,7 @@ const planRoute = async (req, res, next) => {
         const rawWaypoints = sampleWaypoints(
             route.coordinates,
             route.durationMin,
+            route.distanceKm,
             departure
         );
 

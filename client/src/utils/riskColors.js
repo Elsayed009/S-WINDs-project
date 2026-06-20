@@ -23,3 +23,5 @@ const theme = {
     textSecondary: '#8a93a3',
     border: 'rgba(212, 255, 0, 0.25)',
 }
+
+export  {getRiskColor, getRiskLabel, theme};

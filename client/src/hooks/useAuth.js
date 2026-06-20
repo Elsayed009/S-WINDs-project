@@ -8,5 +8,26 @@ const useAuth = () => {
 
     const login = async (credentials) => {
         const response = await loginApi(credentials);
+        dispatch(setUser(response.data.user));
+        return response;
     }
-}
+
+
+const logout = async ()=> {
+    await logoutApi();
+    dispatch(clearUser());
+};
+
+const loadUser = async () => {
+    try{
+        const response = await getMeApi();
+        dispatch(setUser(response.data.user));
+    }catch{
+        dispatch(clearUser());
+    }
+};
+
+return {user, isAuthenticated, loading, login, logout, loadUser}
+};
+
+export default useAuth;

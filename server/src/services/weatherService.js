@@ -112,8 +112,17 @@ const getWeatherForLocationAndTime = async (lat, lng, targetTime)=>{
     console.log(`cache i miss: ${geohash} @ ${roundedTime} - calling API`);
     const weatherData = await fetchWeatherFromAPI(lat, lng, roundedTime);
 
+    try {
+        // await weatherCache.create({geohash, forecastTime: roundedTime, weatherData});
+        await weatherCache.findOneAndUpdate(
+            {geohash, forecastTime: roundedTime},
+            {geohash, forecastTime: roundedTime, weatherData},
+            {upsert: true, new: true}
+        );
+    }catch(err){
+        if (err.code !== 11000) throw err
+    }
     //store api getted data in cach 
-    await weatherCache.create({geohash, forecastTime: roundedTime, weatherData});
 
     return weatherData;
 };

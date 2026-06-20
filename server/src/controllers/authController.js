@@ -251,7 +251,26 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { register, login, refresh, logout };
+const getMe = async (req, res) => {
+    try{ 
+        res.status(200).json({
+            success: true,
+            user: {
+                id: req.user._id,
+                name: req.user.name,
+                email: req.user.email,
+                role: req.user.role,
+                vehicleType: req.user.vehicleType,
+            },
+        });
+
+    }catch(err){
+        res.status(500).json({msg: err.message});
+    }
+};
+
+
+module.exports = { register, login, refresh, logout, getMe };
 
 
 

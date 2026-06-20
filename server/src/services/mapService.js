@@ -22,7 +22,7 @@ const getRoute = async (originLat, originLng, destLat, destLng) => {
     };
 };
 
-const sampleWaypoints = (coordinates, totalDurationMin, departureTime) => {
+const sampleWaypoints = (coordinates, totalDurationMin, totalDistanceKm, departureTime) => {
     const waypoints = [];
     const totalPoints = coordinates.length;
     const numWaypoints = Math.ceil(totalDurationMin /30);
@@ -37,7 +37,7 @@ const sampleWaypoints = (coordinates, totalDurationMin, departureTime) => {
             lat, 
             lng,
             eta: new Date(etaMs),
-            distanceFromStart: progress *(totalPoints > 0 ? totalPoints : 1),
+            distanceFromStart: progress * totalDistanceKm,
         });
     }
     return waypoints;
