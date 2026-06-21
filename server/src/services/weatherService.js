@@ -45,9 +45,8 @@ const fetchWeatherFromOpenMeteo = async (lat, lng, targetTime) => {
     };
 };
 
-
+/* 
 //  Tomorrow.io code for production
-
 
 const fetchWeatherFromTomorrowIO = async (lat, lng, targetTime) => {
     const response = await axios.get('https://api.tomorrow.io/v4/timelines', {
@@ -64,14 +63,14 @@ const fetchWeatherFromTomorrowIO = async (lat, lng, targetTime) => {
     const interval = response.data?.data?.timelines?.[0]?.intervals?.[0]?.values;
     if (!interval) throw new Error('no weather data returned from API');
 
-    // getCondition 
+    // ...    getCondition    ...
 
     return {
         temperature: interval.temperature,
-        
+        // ...  
     };
 };
-
+*/
 
 const getWeatherForLocationAndTime = async (lat, lng, targetTime) => {
     const geohash = encodeGeohash(lat, lng);
@@ -84,11 +83,11 @@ const getWeatherForLocationAndTime = async (lat, lng, targetTime) => {
         return cached.weatherData;
     }
 
-    // if cach is empyt then go to Open-Meteo
-    console.log(`API Call (Open-Meteo): ${geohash} @ ${roundedTime}`);
+    // if cach is empyt then Open-Meteo
+    console.log(` API Call (Open-Meteo): ${geohash} @ ${roundedTime}`);
     const weatherData = await fetchWeatherFromOpenMeteo(lat, lng, roundedTime);
 
-    // store data in cach
+    // save data in cach
     try {
         await weatherCache.findOneAndUpdate(
             { geohash, forecastTime: roundedTime },
