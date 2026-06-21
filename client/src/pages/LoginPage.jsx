@@ -10,7 +10,7 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       await login(data);
-      navigate('/plan');
+      navigate('/');
     } catch (err) {
       alert(err.response?.data?.msg || 'Login failed');
     }

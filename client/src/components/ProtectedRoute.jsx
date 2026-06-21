@@ -12,13 +12,16 @@ const ProtectedRoute = ({ children }) => {
     loadUser();
   }, []);
 
+  useEffect(()=>{
+    if(!loading && !isAuthenticated) {
+      navigate('/login');
+
+    }
+  }, [loading, isAuthenticated]);
   if (loading) return <div style={{ color: '#fff', textAlign: 'center', marginTop: '40vh' }}>Loading...</div>;
 
-  if (!isAuthenticated) {
-    navigate('/login');
-    return null;
-  }
-
+  if (!isAuthenticated) return null;
+  
   return children;
 };
 
