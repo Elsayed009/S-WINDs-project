@@ -22,21 +22,23 @@ const getRoute = async (originLat, originLng, destLat, destLng) => {
     };
 };
 
-const sampleWaypoints = (coordinates, totalDurationMin, totalDistanceKm, departureTime) => {
+// const sampleWaypoints = (coordinates, totalDurationMin, totalDistanceKm, departureTime) => {
+const sampleWaypoints = (coordinates, totalDistanceKm) => {
     const waypoints = [];
     const totalPoints = coordinates.length;
-    const numWaypoints = Math.ceil(totalDurationMin /30);
+    // const numWaypoints = Math.max(2, Math.ceil(totalDurationMin /30));
+    const numWaypoints = Math.max(2, Math.ceil(totalDistanceKm /30));
 
     for (let i = 0; i<= numWaypoints; i++) {
         const progress = Math.min(i / numWaypoints, 1);
         const coordIndex = Math.floor(progress* (totalPoints -1));
         const [lng, lat] = coordinates[coordIndex];
-        const etaMs = departureTime.getTime() + progress * totalDurationMin * 60 *1000;
+        // const etaMs = departureTime.getTime() + progress * totalDurationMin * 60 *1000;
 
         waypoints.push({
             lat, 
             lng,
-            eta: new Date(etaMs),
+            // eta: new Date(etaMs),
             distanceFromStart: progress * totalDistanceKm,
         });
     }

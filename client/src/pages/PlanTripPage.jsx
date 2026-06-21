@@ -2,22 +2,28 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { planRouteApi } from '../api/routeApi';
 import WaypointCard from '../components/WaypointCard';
+import LocationAutocomplete from '../components/LocationAutocomplete';
 
 const PlanTripPage = () => {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm({
+  const { handleSubmit, formState: { isSubmitting }, watch, setValue } = useForm({
     defaultValues: { vehicleType: 'car' },
   });
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
   const [trip, setTrip] = useState(null);
   const [error, setError] = useState(null);
 
-  const onSubmit = async (data) => {
+  const vehicleType = watch('vehicleType');
+
+  const onSubmit = async () => {
+    if (!origin || !destination) {
+      setError('Please select both departure and destination locations');
+      return;
+    }
+
     setError(null);
     try {
-      const payload = {
-        origin: { lat: parseFloat(data.originLat), lng: parseFloat(data.originLng), address: data.originAddress },
-        destination: { lat: parseFloat(data.destLat), lng: parseFloat(data.destLng), address: data.destAddress },
-        vehicleType: data.vehicleType,
-      };
+      const payload = { origin, destination, vehicleType };
       const response = await planRouteApi(payload);
       setTrip(response.data.trip);
     } catch (err) {
@@ -34,32 +40,35 @@ const PlanTripPage = () => {
 
       <div style={styles.grid}>
 
-        {/* Left: Route Configuration */}
         <div style={styles.panel}>
           <h2 style={styles.panelTitle}>Route Configuration</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
-            <label style={styles.label}>Departure Station</label>
-            <input style={styles.input} placeholder="Address" {...register('originAddress')} />
-            <div style={styles.row}>
-              <input style={styles.inputHalf} placeholder="Lat (e.g. 30.0444)" {...register('originLat', { required: true })} />
-              <input style={styles.inputHalf} placeholder="Lng (e.g. 31.2357)" {...register('originLng', { required: true })} />
-            </div>
+            <LocationAutocomplete
+              label="Departure Station"
+              placeholder="Type a city or address..."
+              onSelect={setOrigin}
+            />
 
-            <label style={styles.label}>Destination Station</label>
-            <input style={styles.input} placeholder="Address" {...register('destAddress')} />
-            <div style={styles.row}>
-              <input style={styles.inputHalf} placeholder="Lat (e.g. 31.2001)" {...register('destLat', { required: true })} />
-              <input style={styles.inputHalf} placeholder="Lng (e.g. 29.9187)" {...register('destLng', { required: true })} />
-            </div>
+            <LocationAutocomplete
+              label="Destination Station"
+              placeholder="Type a city or address..."
+              onSelect={setDestination}
+            />
 
             <label style={styles.label}>Vehicle Class</label>
             <div style={styles.vehicleRow}>
               {['car', 'truck', 'motorcycle'].map((v) => (
-                <label key={v} style={styles.vehicleOption}>
-                  <input type="radio" value={v} {...register('vehicleType')} style={{ display: 'none' }} />
-                  <span>{v.toUpperCase()}</span>
-                </label>
+                <div
+                  key={v}
+                  style={{
+                    ...styles.vehicleOption,
+                    ...(vehicleType === v ? styles.vehicleOptionActive : {}),
+                  }}
+                  onClick={() => setValue('vehicleType', v)}
+                >
+                  {v.toUpperCase()}
+                </div>
               ))}
             </div>
 
@@ -71,7 +80,6 @@ const PlanTripPage = () => {
           </form>
         </div>
 
-        {/* Right: Results */}
         <div style={styles.panel}>
           <h2 style={styles.panelTitle}>
             {trip ? 'Route Weather Timeline (ETA Based)' : 'Smart Departure Optimizer'}
@@ -117,24 +125,18 @@ const styles = {
   grid: { display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '20px' },
   panel: { background: '#11151c', borderRadius: '14px', padding: '24px', border: '1px solid rgba(212,255,0,0.1)' },
   panelTitle: { color: '#fff', fontSize: '1.1rem', marginBottom: '20px' },
-  form: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  label: { color: '#8a93a3', fontSize: '0.75rem', marginTop: '12px', textTransform: 'uppercase' },
-  input: {
-    background: '#0a0e14', border: '1px solid #2a2f3a', borderRadius: '8px',
-    padding: '10px 12px', color: '#fff', fontSize: '0.9rem',
-  },
-  row: { display: 'flex', gap: '8px' },
-  inputHalf: {
-    flex: 1, background: '#0a0e14', border: '1px solid #2a2f3a', borderRadius: '8px',
-    padding: '10px 12px', color: '#fff', fontSize: '0.9rem',
-  },
-  vehicleRow: { display: 'flex', gap: '8px', marginTop: '6px' },
+  form: { display: 'flex', flexDirection: 'column', gap: '14px' },
+  label: { color: '#8a93a3', fontSize: '0.75rem', marginTop: '8px', textTransform: 'uppercase' },
+  vehicleRow: { display: 'flex', gap: '8px' },
   vehicleOption: {
     flex: 1, textAlign: 'center', padding: '10px', borderRadius: '8px',
     border: '1px solid #2a2f3a', color: '#8a93a3', fontSize: '0.8rem', cursor: 'pointer',
   },
+  vehicleOptionActive: {
+    border: '1px solid #d4ff00', color: '#d4ff00', boxShadow: '0 0 8px rgba(212,255,0,0.3)',
+  },
   button: {
-    marginTop: '20px', background: '#d4ff00', color: '#0a0e14', border: 'none',
+    marginTop: '10px', background: '#d4ff00', color: '#0a0e14', border: 'none',
     borderRadius: '10px', padding: '14px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer',
   },
   error: { color: '#ff4d4d', fontSize: '0.8rem', marginTop: '8px' },
