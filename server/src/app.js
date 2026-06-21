@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const routeRoutes = require('./routes/routeRoutes');
 const errorHandler = require('./middlewares/errorMiddleware');
 
-
+const geocodeRoutes = require('../src/routes/geocodeRoutes');
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(cors({
 //endpoints routes here:
 app.use('/api/auth', authRoutes);
 app.use('/api/routes', routeRoutes);
-
+app.use('/api/geocode', geocodeRoutes);
 
 
 
