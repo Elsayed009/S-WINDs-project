@@ -35,6 +35,7 @@ const weatherCacheSchema = new mongoose.Schema({
         icon: String,                 // Icon code from the API provider for frontend rendering
 
         // System risk assessment
+        // weatherData: mongoose.Schema.Types.Mixed, flix data apis
         riskLevel: {
             type: String,
             enum: ['low', 'medium', 'high']
