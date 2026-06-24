@@ -6,6 +6,7 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const debounceRef = useRef(null);
   const skipNextSearch = useRef(false); // new
 
@@ -28,6 +29,7 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
       try {
         const response = await geocodeSearchApi(query);
         setResults(response.data.results);
+        setHighlightedIndex(0); //first resualt is default
         setShowDropdown(true);
       } catch (err) {
         setResults([]);
@@ -47,6 +49,24 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
     onSelect({ lat: place.lat, lng: place.lng, address: place.displayName });
   };
 
+  //keyboard checker automation
+  const handleKeyDown = (e)=> {
+    if(!showDropdown || results.length===0) return;
+
+    if(e.key === 'Tab' || e.key === 'Enter') {
+      e.preventDefault();
+      handleSelect(results[setHighlightedIndex]);
+
+    }else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex((prev)=> Math.min(prev +1, results.length -1));
+
+    }else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex((prev)=> Math.max(prev -1, 0));
+    }
+  }
+
   return (
     <div style={styles.wrapper}>
       <label style={styles.label}>{label}</label>
@@ -55,6 +75,7 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
       />
 
@@ -65,7 +86,11 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
           {results.map((place, i) => (
             <div
               key={i}
-              style={styles.option}
+              style={{
+                ...styles.option,
+              ...(i === highlightedIndex ? styles.optionHighlighted: {}),
+            }}
+              onMouseEnter={()=> setHighlightedIndex(i)}
               onMouseDown={() => handleSelect(place)}
             >
               📍 {place.displayName}
@@ -93,6 +118,9 @@ const styles = {
   option: {
     padding: '10px 12px', color: '#fff', fontSize: '0.8rem', cursor: 'pointer',
     borderBottom: '1px solid #1a1f2a',
+  },
+  optionHighlighted: {
+    background: 'rgba(212,255,0,0.1)', borderLeft:'2px, solid, #d4ffoo',
   },
 };
 

@@ -20,7 +20,10 @@ const fetchWeatherFromOpenMeteo = async (lat, lng, targetTime) => {
     const targetHour = targetTime.toISOString().substring(0, 13) + ":00";
      //  "2026-06-21  fromat T15:00
     let index = hourly.time.findIndex(t => t === targetHour);
-    if (index === -1) index = 0; // first value for just check
+    if (index === -1) {
+    console.warn(`no exact match for ${targetHour}, falling back to index 0`);
+        index = 0; // first value for just check
+    }
     // (WMO) convert code nums to words
     const getConditionFromWMO = (code) => {
         if (code === 0) return 'clear';

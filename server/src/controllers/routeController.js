@@ -147,5 +147,31 @@ const getTripHistory = async (req, res, next) => {
         next(err);
     };
 
+};
+
+const getTripById = async (req, res, next)=> {
+    try {
+        const {tripId} = req.params;
+        const trip = await Trip.findOne({
+            _id: tripId,
+            userId: req.user._id,
+        });
+        if (!trip) return res.status(404).json({msg: 'trip not found', success: false});
+        res.status(200).json({
+            success: true,
+            trip: {
+                id: trip._id,
+                totalDistanceKm: trip.totalDistanceKm,
+                totalDurationMin: trip.totalDurationMin,
+                overallRiskLevel: trip.overallRiskLevel,
+                waypoints: trip.waypoints,
+                vehicleType: trip.vehicleType,
+            },
+        });
+    } catch (err) {
+        next(err)
+        
+    }
 }
-module.exports = {planRoute, getTripHistory};
+
+module.exports = {planRoute, getTripHistory, getTripById};

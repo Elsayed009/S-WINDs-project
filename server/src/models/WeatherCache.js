@@ -9,13 +9,32 @@ const weatherCacheSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    weatherData: {
-        temprature: Number,
-        windSpeed: Number,
-        windDirection: Number,
-        precipitation: Number,
-        visibility: Number,
-        condeition: String,
+   weatherData: {
+        // Core temperature metrics
+        temperature: Number,          // Actual temperature
+        feelsLike: Number,            // Apparent (feels like) temperature
+        
+        // Wind & Precipitation
+        windSpeed: Number,            // Wind speed
+        windDirection: Number,        // Wind direction in degrees
+        windGust: Number,             // Sudden wind gusts
+        precipitation: Number,        // Precipitation amount (mm)
+        pop: Number,                  // Probability of Precipitation (%)
+        
+        // Atmosphere & Visibility
+        humidity: Number,             // Humidity percentage %
+        pressure: Number,             // Atmospheric pressure (hPa)
+        visibility: Number,           // Visibility range (meters or km)
+        clouds: Number,               // Cloudiness percentage %
+        uvIndex: Number,              // UV Index
+        dewPoint: Number,             // Dew point
+        
+        // Descriptions & Assets
+        condition: String,            // Main weather group (e.g., Rain, Clear, Clouds)
+        description: String,          // Detailed weather description
+        icon: String,                 // Icon code from the API provider for frontend rendering
+
+        // System risk assessment
         riskLevel: {
             type: String,
             enum: ['low', 'medium', 'high']

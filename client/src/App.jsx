@@ -3,29 +3,36 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import PlanTripPage from './pages/PlanTripPage';
+import RouteResultsPage from './pages/RouteResultsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Routes>
+      //login
       <Route path="/login" element={<LoginPage />} />
+      //register
       <Route path="/register" element={<RegisterPage />} />
+      //home
       <Route 
       path='/'
       element = {
         <ProtectedRoute>
           <HomePage/>
-        </ProtectedRoute>
-      }
-      />
+        </ProtectedRoute>}/>
+        /plan
       <Route
         path="/plan"
         element={
           <ProtectedRoute>
             <PlanTripPage />
-          </ProtectedRoute>
-        }
-      />
+          </ProtectedRoute>}/>
+          //result
+      <Route path='/results' 
+      element={<ProtectedRoute>
+         <RouteResultsPage/> 
+         </ProtectedRoute>}/>
+         //main
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
