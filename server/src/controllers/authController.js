@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const UAParser = require('ua-parser-js');
+const UAParser = require('ua-parser-js'); // a library to analyze the user-agent coplix text to get the brwoser name
 const geoIp = require('geoip-lite'); // getting regin
 //generate AccessToken
 const generateAccessToken = (userId)=>{ 

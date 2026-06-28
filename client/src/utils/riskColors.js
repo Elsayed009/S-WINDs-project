@@ -1,7 +1,7 @@
 const getRiskColor = (riskLevel)=> {
     const colors = {
         low : '#00e5cc',
-        meduim: '#f5a623',
+        medium: '#f5a623',
         high: '#ff4d4d',
 
     };

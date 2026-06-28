@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import  geocodeSearchApi  from '../api/geocodeApi';
+import  {geocodeSearchApi}  from '../api/geocodeApi';
 
 const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
   const [query, setQuery] = useState('');
@@ -55,7 +55,7 @@ const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
 
     if(e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault();
-      handleSelect(results[setHighlightedIndex]);
+      handleSelect(results[highlightedIndex]);
 
     }else if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -120,7 +120,7 @@ const styles = {
     borderBottom: '1px solid #1a1f2a',
   },
   optionHighlighted: {
-    background: 'rgba(212,255,0,0.1)', borderLeft:'2px, solid, #d4ffoo',
+    background: 'rgba(212,255,0,0.1)', borderLeft:'2px solid #d4ff00',
   },
 };
 

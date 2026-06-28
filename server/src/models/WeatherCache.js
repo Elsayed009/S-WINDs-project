@@ -48,7 +48,7 @@ const weatherCacheSchema = new mongoose.Schema({
     },
 });
 
-weatherCacheSchema.index({geohash: 1, forcastTime:1}, {unique: true});
+weatherCacheSchema.index({geohash: 1, forecastTime:1}, {unique: true});
 
 const WeatherCache =  mongoose.model('WeatherCache', weatherCacheSchema);
 module.exports = WeatherCache;
