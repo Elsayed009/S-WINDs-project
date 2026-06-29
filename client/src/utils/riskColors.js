@@ -11,8 +11,8 @@ const getRiskColor = (riskLevel)=> {
 const getRiskLabel = (riskLevel) => {
     const labels = {
         low: "safe",
-        meduim: "caution",
-        high: 'hazerd',
+        medium: "caution",
+        high: 'hazard',
     };
     return labels[riskLevel] || 'unknown';
 };

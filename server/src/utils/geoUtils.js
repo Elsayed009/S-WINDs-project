@@ -11,7 +11,7 @@ const roundToNearest30Min = (date)=> {  //every 30 min
     return new Date(Math.round(date.getTime()/ms)*ms); // check for its 30 or not by mathing
 };
 
-const calculateSafeSpeed = (weatherData, vehicleType) => {
+const calculatemaxSafeSpeed = (weatherData, vehicleType) => {
     const {condition, windSpeed, visibility, precipitation} = weatherData; // get data condition from the wetherData by the destrctuer way of obj
 
     const baseSpeed = { car:120, motorcycle: 100, truck: 90} [vehicleType] || 120;
@@ -31,11 +31,11 @@ return speedLimit;
 };
 
 const calculateRiskLevel = (weatherData, vehicleType) => { // clac the safe speed and the risk level by the weather data and the vehicle type
-    const safeSpeed = calculateSafeSpeed(weatherData, vehicleType);
+    const maxSafeSpeed = calculatemaxSafeSpeed(weatherData, vehicleType);
     const {condition} = weatherData;
         // risk levels
-        if (condition === 'sandstorm' || safeSpeed <= 40) return 'high';
-        if (condition === 'fog' || safeSpeed <= 70) return 'medium';
+        if (condition === 'sandstorm' || maxSafeSpeed <= 40) return 'high';
+        if (condition === 'fog' || maxSafeSpeed <= 70) return 'medium';
         return 'low';
 };
 
@@ -43,5 +43,5 @@ module.exports = {
     encodeGeohash,
     roundToNearest30Min,
     calculateRiskLevel,
-    calculateSafeSpeed,
+    calculatemaxSafeSpeed,
 };

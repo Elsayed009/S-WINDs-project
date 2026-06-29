@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import  {geocodeSearchApi}  from '../api/geocodeApi';
+import  geocodeSearchApi  from '../api/geocodeApi';
 
 const LocationAutocomplete = ({ label, placeholder, onSelect }) => {
   const [query, setQuery] = useState('');

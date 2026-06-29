@@ -31,7 +31,7 @@ const WaypointCard = ({ waypoint, index, isFirst, isLast }) => {
       <div style={styles.middle}>
         <p style={styles.condition}>{waypoint.weather.condition}</p>
         <p style={styles.detail}>
-          Safe speed: {waypoint.safeSpeed} km/h · Visibility {waypoint.weather.visibility}km
+          Max Safe speed: {waypoint.maxSafeSpeed} km/h · Visibility {waypoint.weather.visibility}km
         </p>
       </div>
 

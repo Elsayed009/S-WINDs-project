@@ -99,7 +99,7 @@ const fetchWeatherFromOpenMeteo = async (lat, lng, targetTime) => {
         pop: hourly.precipitation_probability[index],
         humidity: hourly.relative_humidity_2m[index],
         pressure: hourly.surface_pressure[index],
-        visibility: hourly.visibility[index] / 1000, // متر إلى كيلومتر
+        visibility: hourly.visibility[index] / 1000, //  make it by meter good for humans  
         clouds: hourly.cloud_cover[index],
         uvIndex: hourly.uv_index[index],
         dewPoint: hourly.dew_point_2m[index],

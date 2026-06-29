@@ -9,13 +9,24 @@ const waypointSchema = new mongoose.Schema({
   distanceFromStart: { type: Number },
   weather: {
     temperature: Number,
+    feelslike: Number,
     windSpeed: Number,
+    windDirection: Number,
+    windGust: Number,
     precipitation: Number,
+    pop: Number,
+    humidity: Number,
+    pressure: Number,
     visibility: Number,
+    clouds: Number,
+    uvIndex: Number,
+    dewPoint: Number,
     condition: String,
+    description: String,
+    icon: String,
     riskLevel: String,
   },
-  safeSpeed: { type: Number },
+  maxSafeSpeed: { type: Number },
 }, { _id: false });
 
 const tripSchema = new mongoose.Schema(
@@ -47,6 +58,7 @@ const tripSchema = new mongoose.Schema(
     totalDistanceKm: Number,
     totalDurationMin: Number,
     waypoints: [waypointSchema],
+    routePolyline: [[Number]],
     overallRiskLevel: {
       type: String,
       enum: ['low', 'medium', 'high'],
